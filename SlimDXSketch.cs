@@ -262,6 +262,23 @@ public class SlimDXSketch : Form
         }
     }
 
+    public static void UpdateInputAssembler(
+        InputLayout vertexLayout,
+        Buffer vertexBuffer,
+        System.Type vertexDataType, 
+        Buffer indexBuffer
+        )
+    {
+        SetVertexBuffers(
+            vertexLayout,
+            vertexBuffer,
+            vertexDataType);
+
+        SetIndexBuffer(
+            indexBuffer
+        );
+    }
+
     public static void SetVertexBuffers(
         InputLayout vertexLayout,
         Buffer vertexBuffer,
