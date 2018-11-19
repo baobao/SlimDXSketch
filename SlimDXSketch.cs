@@ -331,6 +331,21 @@ public class SlimDXSketch : Form
         );
     }
 
+    public static bool IsPressed(SlimDX.DirectInput.Key[] keys, bool isOnce = true)
+    {
+        if (IsUseKeyboard == false)
+            SetupKeyboard();
+
+        for(int i = 0; i < keys.Length; i++)
+        {
+            if (IsPressed(keys[i], isOnce) == false)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static bool IsPressed(SlimDX.DirectInput.Key key, bool isOnce = true)
     {
         if (IsUseKeyboard == false)
