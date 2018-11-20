@@ -45,6 +45,8 @@ public class SlimDXSketch : Form
     static SlimDX.DirectInput.Mouse _mouse;
     
     static bool IsUseMouse => _dxKeyboardInput != null && _mouse != null;
+
+    public static CameraController camera { get; private set; }
     /// <summary>
     /// Constructor
     /// </summary>
@@ -59,6 +61,7 @@ public class SlimDXSketch : Form
         onDraw = onDrawCallback;
         onClose = onCloseCallback;
 
+        camera = new CameraController();
 
         Instance.InitDevice();
         onSetupCallback?.Invoke();
@@ -111,6 +114,10 @@ public class SlimDXSketch : Form
         _stopwatch.Restart();
 
         ClearRenderTarget();
+
+        // カメラ更新
+        camera.UpdateCamera();
+        // 描画
         onDraw?.Invoke();
         SwapChain.Present(0, PresentFlags.None);
 
@@ -155,10 +162,10 @@ public class SlimDXSketch : Form
     }
     
     static void CreateDeviceAndSwapChain(
-       System.Windows.Forms.Form form,
-       out SlimDX.Direct3D11.Device device,
-       out SlimDX.DXGI.SwapChain swapChain
-       )
+        System.Windows.Forms.Form form,
+        out SlimDX.Direct3D11.Device device,
+        out SlimDX.DXGI.SwapChain swapChain
+        )
     {
         SlimDX.Direct3D11.Device.CreateWithSwapChain(
 
@@ -186,7 +193,7 @@ public class SlimDXSketch : Form
             },
             out device,
             out swapChain
-         );
+            );
     }
 
     /// <summary>
@@ -294,7 +301,7 @@ public class SlimDXSketch : Form
             0,
             new VertexBufferBinding(
                 vertexBuffer,
-                 System.Runtime.InteropServices.Marshal.SizeOf(type),
+                    System.Runtime.InteropServices.Marshal.SizeOf(type),
             0
             )
         );
@@ -306,7 +313,7 @@ public class SlimDXSketch : Form
     public static void SetIndexBuffer(
         Buffer indexBuffer,
         PrimitiveTopology topology = PrimitiveTopology.TriangleStrip
-     )
+        )
     {
         ImmediateContext.InputAssembler.SetIndexBuffer(
             indexBuffer,
@@ -327,11 +334,11 @@ public class SlimDXSketch : Form
         // http://memeplex.blog.shinobi.jp/directx11/c-%E3%81%A7directx11%20slimdx%E3%83%81%E3%ぷｂｌ83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB%E3%81%9D%E3%81%AE12%20%E3%83%AF%E3%82%A4%E3%83%A4%E3%83%BC%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0
         ImmediateContext.Rasterizer.State = RasterizerState.FromDescription(
             Device,
-           new RasterizerStateDescription()
-           {
-               CullMode = mode,
-               FillMode = filleMode
-           }
+            new RasterizerStateDescription()
+            {
+                CullMode = mode,
+                FillMode = filleMode
+            }
         );
     }
 
