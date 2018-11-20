@@ -40,7 +40,11 @@ public class SlimDXSketch : Form
     static SlimDX.DirectInput.Keyboard _keyboard;
 
     public static bool IsUseKeyboard => _dxKeyboardInput != null && _keyboard != null;
+
+    static SlimDX.DirectInput.DirectInput _dxMouseInput;
+    static SlimDX.DirectInput.Mouse _mouse;
     
+    static bool IsUseMouse => _dxKeyboardInput != null && _mouse != null;
     /// <summary>
     /// Constructor
     /// </summary>
@@ -418,5 +422,45 @@ public class SlimDXSketch : Form
     {
         var keyboard = GetKeyboard();
         return keyboard?.GetBufferedData();
+    }
+
+    public static bool TryGetMousePosition(out SlimDX.Vector2 result)
+    {
+        result = new SlimDX.Vector2(0, 0);
+        var mouse = GetMouse();
+        if (mouse != null)
+        {
+            var state = mouse.GetCurrentState();
+            result = new SlimDX.Vector2(state.X, state.Y);
+            return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Mouseを取得します
+    /// </summary>
+    static SlimDX.DirectInput.Mouse GetMouse()
+    {
+        if (IsUseMouse == false)
+            SetupMouse();
+
+        if (_mouse != null && _mouse.Acquire().IsSuccess)
+        {
+            return _mouse;
+        }
+        return null;
+    }
+
+    static void SetupMouse()
+    {
+        _dxMouseInput = new SlimDX.DirectInput.DirectInput();
+        _mouse = new SlimDX.DirectInput.Mouse(_dxMouseInput);
+        _mouse.Properties.BufferSize = 100;
+        _mouse.SetCooperativeLevel(SlimDXSketch.Instance.Handle,
+            SlimDX.DirectInput.CooperativeLevel.Foreground
+            | SlimDX.DirectInput.CooperativeLevel.Nonexclusive
+        );
     }
 }
