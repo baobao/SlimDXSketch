@@ -2,44 +2,35 @@
 
 public class Transform
 {
-    public Vector3 position
+    public Vector3 Position
     {
         get
         {
-            return localPosition + ParentPosition;
+            return LocalPosition + (_parent != null ? _parent.Position : new Vector3(0, 0, 0));
         }
         set
         {
-            localPosition = value - ParentPosition;
+            LocalPosition = value - (_parent != null ? _parent.Position : new Vector3(0, 0, 0));
         }
     }
-
-    /// <summary>
-    /// 親階層のワールド座標
-    /// </summary>
-    Vector3 ParentPosition => _parent != null ? _parent.position : new Vector3(0, 0, 0);
-
-
-    public Vector3 localPosition;
+    
+    public Vector3 LocalPosition { get; set; }
 
     public Vector3 EulerAngles
     {
         get
         {
-            return localEulerAngles + ParentEulerAnglse;
+            return LocalEulerAngles + (_parent != null ? _parent.EulerAngles : new Vector3(0, 0, 0));
         }
         set
         {
-            localEulerAngles = value - ParentEulerAnglse;
+            LocalEulerAngles = value - (_parent != null ? _parent.EulerAngles : new Vector3(0, 0, 0));
         }
     }
 
+    public Vector3 LocalEulerAngles { get; set; }
 
-    public Vector3 localEulerAngles;
-
-    Vector3 ParentEulerAnglse => _parent != null ? _parent.EulerAngles : new Vector3(0, 0, 0);
-
-    public Vector3 localScale = new Vector3(1f, 1f, 1f);
+    public Vector3 LocalScale { get; set; } = new Vector3(1f, 1f, 1f);
 
     private Transform _parent;
 
@@ -47,10 +38,7 @@ public class Transform
     Matrix _mMatrix;
     Matrix _vpMatrix;
     Matrix _vMatrix;
-
-    Matrix ParentMMatrix => _parent != null ? _parent.MMatrix : Matrix.Identity;
-
-
+    
     public Transform SetVPMatrix(Matrix vpMatrix)
     {
         _vpMatrix = vpMatrix;
@@ -71,26 +59,26 @@ public class Transform
     protected Matrix ResolveMVPMatrix()
     {
         // スケールMatrix
-        var localScaleMatrix = Matrix.Scaling(localScale);
+        var localScaleMatrix = Matrix.Scaling(LocalScale);
 
         // 回転行列
         var localRotateXMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(1, 0, 0), localEulerAngles.X)
+            Quaternion.RotationAxis(new Vector3(1, 0, 0), LocalEulerAngles.X)
         );
         var localRotateYMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(0, 1, 0), localEulerAngles.Y)
+            Quaternion.RotationAxis(new Vector3(0, 1, 0), LocalEulerAngles.Y)
         );
         var localRotateZMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(0, 0, 1), localEulerAngles.Z)
+            Quaternion.RotationAxis(new Vector3(0, 0, 1), LocalEulerAngles.Z)
         );
         // ZXYの順で計算
         var localRotateMatrix = localRotateZMatrix * localRotateXMatrix * localRotateYMatrix;
 
         var localPositionMatrix = Matrix.Identity;
         localPositionMatrix.set_Rows(3, new Vector4(
-            localPosition.X,
-            localPosition.Y,
-            localPosition.Z, 1f));
+            LocalPosition.X,
+            LocalPosition.Y,
+            LocalPosition.Z, 1f));
 
         var localMMatrix = localScaleMatrix * localRotateMatrix * localPositionMatrix;
 
