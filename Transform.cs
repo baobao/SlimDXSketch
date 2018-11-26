@@ -34,8 +34,48 @@ public class Transform
 
     private Transform _parent;
 
-    public Matrix MMatrix => _mMatrix;
-    Matrix _mMatrix;
+    internal Matrix MMatrix => 
+        (LocalScaleMatrix * LocalRotateMatrix * LocalPositionMatrix) 
+        * (_parent != null ? _parent.MMatrix : Matrix.Identity);
+
+    private Matrix LocalScaleMatrix => Matrix.Scaling(LocalScale);
+
+    private Matrix LocalRotateMatrix
+    {
+        get
+        {
+            // X軸回転行列
+            var localRotateXMatrix = Matrix.RotationQuaternion(
+                Quaternion.RotationAxis(new Vector3(1, 0, 0), LocalEulerAngles.X)
+            );
+            // Y軸回転行列
+            var localRotateYMatrix = Matrix.RotationQuaternion(
+                Quaternion.RotationAxis(new Vector3(0, 1, 0), LocalEulerAngles.Y)
+            );
+            // Z軸回転行列
+            var localRotateZMatrix = Matrix.RotationQuaternion(
+                Quaternion.RotationAxis(new Vector3(0, 0, 1), LocalEulerAngles.Z)
+            );
+            // ZXYの順で計算
+            return localRotateZMatrix * localRotateXMatrix * localRotateYMatrix;
+        }
+    }
+
+    private Matrix LocalPositionMatrix
+    {
+        get
+        {
+            var localPositionMatrix = Matrix.Identity;
+            localPositionMatrix.set_Rows(3, new Vector4(
+                LocalPosition.X,
+                LocalPosition.Y,
+                LocalPosition.Z, 1f));
+            return localPositionMatrix;
+        }
+    }
+
+    public Matrix MVPMatrix => MMatrix * _vpMatrix;
+
     Matrix _vpMatrix;
     Matrix _vMatrix;
     
@@ -56,37 +96,6 @@ public class Transform
         _parent = parent;
         return this;
     }
-    protected Matrix ResolveMVPMatrix()
-    {
-        // スケールMatrix
-        var localScaleMatrix = Matrix.Scaling(LocalScale);
-
-        // 回転行列
-        var localRotateXMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(1, 0, 0), LocalEulerAngles.X)
-        );
-        var localRotateYMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(0, 1, 0), LocalEulerAngles.Y)
-        );
-        var localRotateZMatrix = Matrix.RotationQuaternion(
-            Quaternion.RotationAxis(new Vector3(0, 0, 1), LocalEulerAngles.Z)
-        );
-        // ZXYの順で計算
-        var localRotateMatrix = localRotateZMatrix * localRotateXMatrix * localRotateYMatrix;
-
-        var localPositionMatrix = Matrix.Identity;
-        localPositionMatrix.set_Rows(3, new Vector4(
-            LocalPosition.X,
-            LocalPosition.Y,
-            LocalPosition.Z, 1f));
-
-        var localMMatrix = localScaleMatrix * localRotateMatrix * localPositionMatrix;
-
-        _mMatrix = localMMatrix * (_parent != null ? _parent.MMatrix : Matrix.Identity);
-
-        return _mMatrix * _vpMatrix;
-    }
-
 
     private Matrix GetBillBoardMatrix()
     {
