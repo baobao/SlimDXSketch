@@ -20,7 +20,7 @@ public class CameraController : Transform
     {
         _vMatrix = Matrix.LookAtLH(
             // eye
-            position,
+            Position,
             // target
             LookAtPos,
             // up
