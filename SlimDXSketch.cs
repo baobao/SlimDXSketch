@@ -277,7 +277,8 @@ public class SlimDXSketch : Form
         InputLayout vertexLayout,
         Buffer vertexBuffer,
         System.Type vertexDataType, 
-        Buffer indexBuffer
+        Buffer indexBuffer,
+        PrimitiveTopology topology
         )
     {
         SetVertexBuffers(
@@ -286,7 +287,8 @@ public class SlimDXSketch : Form
             vertexDataType);
 
         SetIndexBuffer(
-            indexBuffer
+            indexBuffer,
+            topology
         );
     }
 
@@ -329,7 +331,7 @@ public class SlimDXSketch : Form
     }
 
 
-    public static void SetCullingMode(SlimDX.Direct3D11.CullMode mode, FillMode filleMode = FillMode.Solid)
+    public static void SetCullingMode(SlimDX.Direct3D11.CullMode mode, FillMode filleMode = FillMode.Solid) 
     {
         // http://memeplex.blog.shinobi.jp/directx11/c-%E3%81%A7directx11%20slimdx%E3%83%81%E3%ぷｂｌ83%A5%E3%83%BC%E3%83%88%E3%83%AA%E3%82%A2%E3%83%AB%E3%81%9D%E3%81%AE12%20%E3%83%AF%E3%82%A4%E3%83%A4%E3%83%BC%E3%83%95%E3%83%AC%E3%83%BC%E3%83%A0
         ImmediateContext.Rasterizer.State = RasterizerState.FromDescription(
