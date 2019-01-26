@@ -36,6 +36,10 @@ public class SlimDXSketch : Form
     private long _frameCount;
     private RenderTargetView _renderTarget;
     private System.Diagnostics.Stopwatch _stopwatch = new System.Diagnostics.Stopwatch();
+
+    private DepthStencilView _depthStencil;
+
+
     static SlimDX.DirectInput.DirectInput _dxKeyboardInput;
     static SlimDX.DirectInput.Keyboard _keyboard;
 
@@ -67,6 +71,10 @@ public class SlimDXSketch : Form
         onSetupCallback?.Invoke();
 
         Instance.InitRenderTarget();
+        Instance.InitDepthStencil();
+        ImmediateContext.
+           OutputMerger.SetTargets(Instance._depthStencil, Instance._renderTarget);
+
         Instance.InitViewport();
         MessagePump.Run(Instance, Instance.Loop);
         onClose?.Invoke();
@@ -89,6 +97,7 @@ public class SlimDXSketch : Form
             {
                 Width = this.ClientSize.Width,
                 Height = this.ClientSize.Height,
+                MaxZ = 1
             });
     }
 
@@ -106,6 +115,25 @@ public class SlimDXSketch : Form
         }
     }
 
+    private void InitDepthStencil()
+    {
+        Texture2DDescription depthBufferDesc = new Texture2DDescription
+        {
+            ArraySize = 1,
+            BindFlags = BindFlags.DepthStencil,
+            Format = Format.D32_Float,
+            Width = ClientSize.Width,
+            Height = ClientSize.Height,
+            MipLevels = 1,
+            SampleDescription = new SampleDescription(1, 0)
+        };
+
+        using (Texture2D depthBuffer = new Texture2D(Device, depthBufferDesc))
+        {
+            _depthStencil = new DepthStencilView(Device, depthBuffer);
+        }
+    }
+
     /// <summary>
     /// ループ処理
     /// </summary>
@@ -114,6 +142,14 @@ public class SlimDXSketch : Form
         _stopwatch.Restart();
 
         ClearRenderTarget();
+
+        ImmediateContext.ClearDepthStencilView(
+            _depthStencil,
+            DepthStencilClearFlags.Depth,
+            1,
+            0
+            );
+
 
         // カメラ更新
         camera.UpdateCamera();
@@ -143,6 +179,7 @@ public class SlimDXSketch : Form
     {
         _renderTarget.Dispose();
         _swapChain.Dispose();
+        _depthStencil.Dispose();
         _device.Dispose();
         onDraw = null;
         _instance = null;
