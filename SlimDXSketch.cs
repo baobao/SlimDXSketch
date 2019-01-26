@@ -359,6 +359,26 @@ public class SlimDXSketch : Form
         return true;
     }
 
+    public static SlimDX.DirectInput.Key GetPressedKey()
+    {
+        if (IsUseKeyboard == false)
+            SetupKeyboard();
+
+        var stateList = GetKeyboardBufferData();
+        if (stateList != null)
+        {
+            for (int i = 0; i < stateList.Count; i++)
+            {
+                var state = stateList[i];
+                foreach (var __key in state.PressedKeys)
+                {
+                    return __key;
+                }
+            }
+        }
+        return SlimDX.DirectInput.Key.Unknown;
+    }
+
     public static bool IsPressed(SlimDX.DirectInput.Key key, bool isOnce = true)
     {
         if (IsUseKeyboard == false)
@@ -372,6 +392,13 @@ public class SlimDXSketch : Form
                 for (int i = 0; i < stateList.Count; i++)
                 {
                     var state = stateList[i];
+                    foreach(var __key in state.PressedKeys)
+                    {
+                        if (key == __key)
+                        {
+                            return true;
+                        }
+                    }
                     if (state.IsPressed(key))
                     {
                         return true;
