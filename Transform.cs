@@ -40,21 +40,23 @@ public class Transform
 
     private Matrix LocalScaleMatrix => Matrix.Scaling(LocalScale);
 
-    private Matrix LocalRotateMatrix
+    protected Matrix LocalRotateMatrix
     {
         get
         {
+            var radian = LocalEulerAngles * (float)System.Math.PI / 180f;
+
             // X軸回転行列
             var localRotateXMatrix = Matrix.RotationQuaternion(
-                Quaternion.RotationAxis(new Vector3(1, 0, 0), LocalEulerAngles.X)
+                Quaternion.RotationAxis(new Vector3(1, 0, 0), radian.X)
             );
             // Y軸回転行列
             var localRotateYMatrix = Matrix.RotationQuaternion(
-                Quaternion.RotationAxis(new Vector3(0, 1, 0), LocalEulerAngles.Y)
+                Quaternion.RotationAxis(new Vector3(0, 1, 0), radian.Y)
             );
             // Z軸回転行列
             var localRotateZMatrix = Matrix.RotationQuaternion(
-                Quaternion.RotationAxis(new Vector3(0, 0, 1), LocalEulerAngles.Z)
+                Quaternion.RotationAxis(new Vector3(0, 0, 1), radian.Z)
             );
             // ZXYの順で計算
             return localRotateZMatrix * localRotateXMatrix * localRotateYMatrix;
