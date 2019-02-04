@@ -497,7 +497,11 @@ public class SlimDXSketch : Form
         return keyboard?.GetBufferedData();
     }
 
-    public static bool TryGetMousePosition(out SlimDX.Vector2 result)
+
+    /// <summary>
+    /// マウスの移動Deltaを取得
+    /// </summary>
+    public static bool TryGetMouseDelta(out SlimDX.Vector2 result)
     {
         result = new SlimDX.Vector2(0, 0);
         var mouse = GetMouse();
