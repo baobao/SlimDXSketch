@@ -497,6 +497,14 @@ public class SlimDXSketch : Form
         return keyboard?.GetBufferedData();
     }
 
+    /// <summary>
+    /// マウスのスクリーン座標を取得
+    /// </summary>
+    public static SlimDX.Vector2 GetMousePosition()
+    {
+        var pos = Instance.PointToClient(Cursor.Position);
+        return new SlimDX.Vector2(pos.X, pos.Y);
+    }
 
     /// <summary>
     /// マウスの移動Deltaを取得
