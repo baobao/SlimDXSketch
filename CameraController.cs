@@ -7,12 +7,14 @@ public class CameraController : Transform
 
     Matrix _vMatrix;
     Matrix _vpMatrix;
+    Matrix _pMatrix;
     /// <summary>
     /// 並行投影orthographicsのVPMatrix
     /// </summary>
     Matrix _orthoVPMatrix;
 
     public Matrix VMatrix { get =>_vMatrix; }
+    public Matrix PMatrix { get => _pMatrix; }
     public Matrix VPMatrix { get => _vpMatrix; }
     public Matrix OrthoVPMatrix { get => _orthoVPMatrix; }
 
@@ -27,14 +29,15 @@ public class CameraController : Transform
             new Vector3(0, 1, 0)
             );
 
-        Matrix projection = Matrix.PerspectiveFovLH(
+        _pMatrix = Matrix.PerspectiveFovLH(
             (float)System.Math.PI / 2,
             SlimDXSketch.Instance.ClientSize.Width /
                  SlimDXSketch.Instance.ClientSize.Height,
             0.1f, 1000
             );
 
-        _vpMatrix = _vMatrix * projection;
+
+        _vpMatrix = _vMatrix * _pMatrix;
 
         Matrix orthoProjection = Matrix.OrthoLH(
             (float)SlimDXSketch.Instance.ClientSize.Width / 100f,
