@@ -526,7 +526,7 @@ public class SlimDXSketch : Form
     /// <summary>
     /// Mouseを取得します
     /// </summary>
-    static SlimDX.DirectInput.Mouse GetMouse()
+    public static SlimDX.DirectInput.Mouse GetMouse()
     {
         if (IsUseMouse == false)
             SetupMouse();
